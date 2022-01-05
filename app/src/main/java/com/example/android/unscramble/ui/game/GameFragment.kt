@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.android.unscramble.R
 import com.example.android.unscramble.databinding.GameFragmentBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
  * Fragment where the game is played, contains the game logic.
@@ -113,5 +114,16 @@ class GameFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         Log.d("GameFragment", "Fragment destroyed")
+    }
+
+    private fun showFinalScoreDialog(){
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+        dialog.setTitle(getString(R.string.congratulations))
+        dialog.setMessage(getString(R.string.you_scored, viewModel.score))
+        dialog.setCancelable(false)
+        //al posto di indicare gli argomenti non utilizzati si possono sostituire con degli _ {dialog, which -> exitGame()}
+        dialog.setNegativeButton(getString(R.string.exit)){_, _ -> exitGame()}
+        dialog.setPositiveButton(getString(R.string.play_again)){_, _ -> restartGame()}
+        dialog.show()
     }
 }
