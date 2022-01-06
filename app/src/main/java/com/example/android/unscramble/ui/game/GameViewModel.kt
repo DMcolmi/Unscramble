@@ -1,28 +1,32 @@
 package com.example.android.unscramble.ui.game
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlin.random.Random
 
 class GameViewModel: ViewModel() {
 
-    private var _score = 0
-    private var _currentWordCount = 0
-    private var _currentScrambledWord = "test"
+    private var _score = MutableLiveData<Int>()
+    private var _currentWordCount = MutableLiveData<Int>()
+    private val _currentScrambledWord = MutableLiveData<String>()
     private var wordList: MutableList<String> = mutableListOf()
     private var _currentWord =""
 
     init{
         Log.d("GameFragment", "GameViewModel created")
+        _currentWordCount.value = 0
+        _score.value = 0
         getNextWord()
     }
 
     //in Kotlin di dafault se non è indicato il modificatore di accesso è sotto inteso public
-    val score: Int
+    val score: LiveData<Int>
         get() = _score
-    val currentWordCount
+    val currentWordCount: LiveData<Int>
         get() = _currentWordCount
-    val currentScrambledWord
+    val currentScrambledWord : LiveData<String>
         get() = _currentScrambledWord
     val currentWord
         get() = _currentWord
@@ -34,7 +38,7 @@ class GameViewModel: ViewModel() {
     }
 
     fun nextWord(): Boolean {
-        if(_currentWordCount < MAX_NO_OF_WORDS){
+        if(_currentWordCount.value!! < MAX_NO_OF_WORDS){
             getNextWord()
             return true
         }else{
@@ -45,8 +49,8 @@ class GameViewModel: ViewModel() {
     private fun getNextWord(){
         _currentWord = getUniqueWord()
         wordList.add(_currentWord)
-        _currentWordCount ++
-        _currentScrambledWord  = wordScrambler(_currentWord)
+        _currentWordCount.value = _currentWordCount.value!! +1
+        _currentScrambledWord.value  = wordScrambler(_currentWord)
     }
 
     private fun wordScrambler(currentWord: String) : String{
@@ -60,7 +64,7 @@ class GameViewModel: ViewModel() {
     }
 
     private fun increaseScore(){
-        _score += SCORE_INCREASE
+        _score.value = _score.value!! + SCORE_INCREASE
     }
 
     fun isUserWordCorrect(word: String) :Boolean{
@@ -68,6 +72,13 @@ class GameViewModel: ViewModel() {
             increaseScore()
 
         return word.equals(currentWord, true)
+    }
+
+    fun newGameInit(){
+        _score.value = 0
+        _currentWordCount.value = 0
+        wordList.clear()
+        getNextWord()
     }
 
 }
