@@ -59,4 +59,15 @@ class GameViewModel: ViewModel() {
         return if (wordList.contains(word)) {getUniqueWord()} else word
     }
 
+    private fun increaseScore(){
+        _score += SCORE_INCREASE
+    }
+
+    fun isUserWordCorrect(word: String) :Boolean{
+        if(word.equals(currentWord, true))
+            increaseScore()
+
+        return word.equals(currentWord, true)
+    }
+
 }

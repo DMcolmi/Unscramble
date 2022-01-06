@@ -50,6 +50,7 @@ class GameFragment : Fragment() {
         // Inflate the layout XML file and return a binding object instance
         binding = GameFragmentBinding.inflate(inflater, container, false)
         Log.d("GameFragment", "GameFragment fragment created or re-created")
+        Log.d("GameFragment", "Word: ${viewModel.currentWord}, Socre: ${viewModel.score}, Word count: ${viewModel.currentWordCount}"    )
         return binding.root
     }
 
@@ -57,8 +58,8 @@ class GameFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Setup a click listener for the Submit and Skip buttons.
-       // binding.submit.setOnClickListener { onSubmitWord() }
-       // binding.skip.setOnClickListener { onSkipWord() }
+        binding.submit.setOnClickListener { onSubmitWord() }
+        binding.skip.setOnClickListener { onSkipWord() }
         // Update the UI
         updateNextWordOnScreen()
         binding.score.text = getString(R.string.score, 0)
@@ -66,14 +67,7 @@ class GameFragment : Fragment() {
                 R.string.word_count, 0, MAX_NO_OF_WORDS)
     }
 
-    /*
-     * Gets a random word for the list of words and shuffles the letters in it.
-     */
-    private fun getNextScrambledWord(): String {
-        val tempWord = allWordsList.random().toCharArray()
-        tempWord.shuffle()
-        return String(tempWord)
-    }
+
 
     /*
      * Re-initializes the data in the ViewModel and updates the views with the new data, to
@@ -116,6 +110,7 @@ class GameFragment : Fragment() {
         Log.d("GameFragment", "Fragment destroyed")
     }
 
+    //crea una finestra di Dialog
     private fun showFinalScoreDialog(){
         val dialog = MaterialAlertDialogBuilder(requireContext())
         dialog.setTitle(getString(R.string.congratulations))
@@ -125,5 +120,29 @@ class GameFragment : Fragment() {
         dialog.setNegativeButton(getString(R.string.exit)){_, _ -> exitGame()}
         dialog.setPositiveButton(getString(R.string.play_again)){_, _ -> restartGame()}
         dialog.show()
+    }
+
+    //funzione che a setta la parola successiva o apre il dialog di fine gioco a seconda del numero di parole 'giocate'
+    private fun onSubmitWord(){
+        val playerWord = binding.textInputEditText.text.toString()
+        val wordMatch = viewModel.isUserWordCorrect(playerWord)
+        setErrorTextField(!wordMatch)
+
+        if(wordMatch){
+            if(viewModel.nextWord()){
+                updateNextWordOnScreen()
+            } else {
+                showFinalScoreDialog()
+            }
+        }
+    }
+
+    private fun onSkipWord(){
+        if(viewModel.nextWord()){
+            updateNextWordOnScreen()
+            setErrorTextField(false)
+        } else {
+            showFinalScoreDialog()
+        }
     }
 }
