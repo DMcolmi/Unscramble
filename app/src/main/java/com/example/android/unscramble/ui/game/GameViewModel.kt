@@ -8,16 +8,14 @@ import kotlin.random.Random
 
 class GameViewModel: ViewModel() {
 
-    private var _score = MutableLiveData<Int>()
-    private var _currentWordCount = MutableLiveData<Int>()
+    private val _score = MutableLiveData<Int>(0)
+    private val _currentWordCount = MutableLiveData<Int>(0)
     private val _currentScrambledWord = MutableLiveData<String>()
     private var wordList: MutableList<String> = mutableListOf()
     private var _currentWord =""
 
     init{
         Log.d("GameFragment", "GameViewModel created")
-        _currentWordCount.value = 0
-        _score.value = 0
         getNextWord()
     }
 
@@ -49,7 +47,7 @@ class GameViewModel: ViewModel() {
     private fun getNextWord(){
         _currentWord = getUniqueWord()
         wordList.add(_currentWord)
-        _currentWordCount.value = _currentWordCount.value!! +1
+        _currentWordCount.value = (_currentWordCount.value)?.inc()
         _currentScrambledWord.value  = wordScrambler(_currentWord)
     }
 
@@ -64,7 +62,7 @@ class GameViewModel: ViewModel() {
     }
 
     private fun increaseScore(){
-        _score.value = _score.value!! + SCORE_INCREASE
+        _score.value = (_score.value)?.plus(SCORE_INCREASE)
     }
 
     fun isUserWordCorrect(word: String) :Boolean{

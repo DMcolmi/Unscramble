@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.android.unscramble.R
@@ -47,7 +48,11 @@ class GameFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout XML file and return a binding object instance
-        binding = GameFragmentBinding.inflate(inflater, container, false)
+        //binding = GameFragmentBinding.inflate(inflater, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
+        binding.gameViewModel = viewModel
+        binding.maxNoOfWords = MAX_NO_OF_WORDS
+        binding.lifecycleOwner = viewLifecycleOwner
         Log.d("GameFragment", "GameFragment fragment created or re-created")
         Log.d(
             "GameFragment",
@@ -63,11 +68,9 @@ class GameFragment : Fragment() {
         binding.submit.setOnClickListener { onSubmitWord() }
         binding.skip.setOnClickListener { onSkipWord() }
 
-
+        /* NOTA: sostituito da 'Data Binding'
         //osserva il valore di cirrentScrambledWord in LiveData
-        viewModel.currentScrambledWord.observe(
-            viewLifecycleOwner,
-            { newWord -> binding.textViewUnscrambledWord.text = newWord })
+        viewModel.currentScrambledWord.observe(viewLifecycleOwner, { newWord -> binding.textViewUnscrambledWord.text = newWord })
 
         //osserva il valore di score in LiveData, questa notifica GameFragment se ci sono cambiamenti e se è attiva(per capire se è attiva utilizza 'viewLifecycleOwner')
         // e notifica GameFragment in caso di cambiamenti, eseguento la lambda expression che viene passata al metodo observe(..)
@@ -75,7 +78,9 @@ class GameFragment : Fragment() {
 
         //si setta observer per currentWordCount
         viewModel.currentWordCount.observe(viewLifecycleOwner, {newCount -> binding.wordCount.text = getString(R.string.word_count, newCount, MAX_NO_OF_WORDS)})
+         */
     }
+
 
 
     /*
